@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Envs
+.venv/
+venv/
+env/
+
+# Logs / outputs / artifacts
+logs/
+outputs*/
+results/
+vis/
+wandb/
+*.log
+*.out
+*.err
+
+# Checkpoints / large binaries
+*.pth
+*.pt
+*.ckpt
+*.onnx
+*.npz
+*.npy
+*.pkl
+*.joblib
+
+# IDE
+.vscode/
+.idea/
