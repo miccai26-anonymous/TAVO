@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
 # ============================================================
-# 修正 PYTHONPATH，方便以后如果要 import 别的模块
+# Fix PYTHONPATH for module imports
 # ============================================================
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
@@ -16,14 +16,14 @@ print(f">>> PROJECT_ROOT = {PROJECT_ROOT}")
 print(f">>> sys.path[0] = {sys.path[0]}")
 
 # ============================================================
-# 配置路径（根据你现在的结构）
+# Configure paths
 # ============================================================
 BASE_DIR = PROJECT_ROOT   # = .../EfficientVit
 GRAD_DIR = os.path.join(BASE_DIR, "results/orient_gradients")
 SUBSET_ROOT = os.path.join(BASE_DIR, "data/splits_21_orient_static_T60")
 
 # ============================================================
-# 1. 加载 case-level 向量和 ID
+# 1. Load case-level vectors and IDs
 # ============================================================
 src_vecs = np.load(os.path.join(GRAD_DIR, "src_case_vecs.npy"))
 tgt_vecs = np.load(os.path.join(GRAD_DIR, "tgt_case_vecs.npy"))
@@ -44,16 +44,16 @@ assert Ns == len(src_ids), "❌ src_vecs rows != src_ids count"
 assert Nt == len(tgt_ids), "❌ tgt_vecs rows != tgt_ids count"
 
 # ============================================================
-# 2. 计算 naive 的 “与 target 的平均 cosine 相似度”
+# 2. Compute naive mean cosine similarity to target
 #    sim_mean[i] = mean_j cos(src_i, tgt_j)
 # ============================================================
 print("\n📐 Computing cosine similarity matrix src × tgt ...")
 sim_matrix = cosine_similarity(src_vecs, tgt_vecs)  # (Ns, Nt)
 
 sim_mean = sim_matrix.mean(axis=1)   # (Ns,)
-# 你也可以改成 sim_max = sim_matrix.max(axis=1)，看哪个更稳
+# Alternative: sim_max = sim_matrix.max(axis=1)
 
-# 排名：越大越前 → rank=1 是最相似
+# Rank: higher sim = lower rank; rank=1 is most similar
 order_desc = np.argsort(-sim_mean)              # indices sorted by descending sim
 ranks = np.empty_like(order_desc)
 ranks[order_desc] = np.arange(1, Ns + 1)        # ranks[i] = 1..Ns
@@ -62,11 +62,11 @@ print("✅ Finished computing mean similarity + ranks.")
 print(f"Example: best src index = {order_desc[0]} with sim_mean = {sim_mean[order_desc[0]]:.4f}")
 
 # ============================================================
-# 3. 封装一个小工具：给定 ORIENT subset，做 rank 分析
+# 3. Analyze rank statistics for a given ORIENT subset
 # ============================================================
 def analyze_subset(tag, selected_ids):
     """
-    tag: 例如 'orient_1T'
+    tag: e.g. 'orient_1T'
     selected_ids: list of subject IDs (e.g. 'BraTS2021_00001')
     """
     id_to_idx = {sid: i for i, sid in enumerate(src_ids)}
@@ -87,10 +87,10 @@ def analyze_subset(tag, selected_ids):
     if missing:
         print(f"⚠️  {len(missing)} IDs not found in src_ids (show first 5): {missing[:5]}")
 
-    sel_ranks = ranks[sel_indices]  # 越小越好
+    sel_ranks = ranks[sel_indices]  # lower is better
     sel_sims  = sim_mean[sel_indices]
 
-    # 基本统计
+    # Basic statistics
     print(f"Rank stats (1 = best, Ns = worst, Ns = {Ns}):")
     print(f"  min rank  = {sel_ranks.min()}")
     print(f"  10% perc  = {np.percentile(sel_ranks, 10):.1f}")
@@ -100,7 +100,7 @@ def analyze_subset(tag, selected_ids):
     print(f"  90% perc  = {np.percentile(sel_ranks, 90):.1f}")
     print(f"  max rank  = {sel_ranks.max()}")
 
-    # 覆盖 top-k (top10%, 20%, 50%)
+    # Coverage in top-k (top10%, 20%, 50%)
     def coverage(top_frac):
         cutoff = int(np.ceil(Ns * top_frac))
         return (sel_ranks <= cutoff).mean(), cutoff
@@ -109,9 +109,9 @@ def analyze_subset(tag, selected_ids):
         cov, cutoff = coverage(frac)
         print(f"  % in top {int(frac*100)}% (rank ≤ {cutoff}): {cov*100:.2f}%")
 
-    # 输出前 10 个 ORIENT 选中的 case，看它们的 naive 排名和 similarity
+    # Show top 10 ORIENT-selected cases with their naive rank and similarity
     print("\n  Top 10 ORIENT-selected (by naive similarity within subset):")
-    idx_sorted_inside = sel_indices[np.argsort(-sel_sims)]  # 子集内部按 sim 排序
+    idx_sorted_inside = sel_indices[np.argsort(-sel_sims)]  # sort within subset by similarity
     for i in idx_sorted_inside[:10]:
         print(
             f"    ID={src_ids[i]:<25}  "
@@ -121,7 +121,7 @@ def analyze_subset(tag, selected_ids):
 
 
 # ============================================================
-# 4. 对 4 个 subset 做分析
+# 4. Analyze 4 subsets
 # ============================================================
 def main():
     T = 50

@@ -45,7 +45,7 @@ WARMUP_CKPT_MAP = {
 }
 
 # =====================================================
-# METHODS —— 改这里即可切换维度
+# METHODS -- edit here to change dimensionality
 # =====================================================
 METHODS = ["rds", "less", "orient"]
 # METHODS = [
@@ -130,7 +130,7 @@ def run_candidate(
     split_dir.mkdir(parents=True, exist_ok=True)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    # 1) 选 subject（仍然落盘，保持你原来的目录结构 & 可复现）
+    # 1) Select subjects (written to disk for reproducibility)
     selected_subjects = build_subset(
         score_dicts=score_dicts,
         weights=weights,
@@ -138,7 +138,7 @@ def run_candidate(
         out_txt=train_txt,
     )
 
-    # 2) subject -> slice indices（关键：不再扫盘）
+    # 2) Subject -> slice indices (no disk scanning)
     indices: List[int] = []
     missing = 0
     for sid in selected_subjects:
@@ -164,17 +164,17 @@ def run_candidate(
             shutil.rmtree(seed_out)
         seed_out.mkdir(parents=True, exist_ok=True)
 
-        # 3) 生成 cfg（不再 build_yaml，不再依赖 split_txt）
+        # 3) Build cfg (in-memory, no split_txt dependency)
         cfg = copy.deepcopy(template_cfg)
         cfg["trainer"]["max_iters"] = int(iters)
         cfg["training"]["save_dir"] = str(seed_out)
         warmup_ckpt = WARMUP_CKPT_MAP[f"repeat{repeat_id:02d}"]
         cfg["warmup"] = {"checkpoint": str(warmup_ckpt)}
 
-        # 仍然保存一份 config，供 fast_dice 读取（保持兼容）
+        # Save config for fast_dice compatibility
         seed_yaml.write_text(yaml.safe_dump(cfg))
 
-        # 4) 直接函数调用训练（核心加速点）
+        # 4) Direct function call for training (main speedup)
         run_short_training_with_dataset(
             cfg=cfg,
             seeds=[sd],
@@ -182,11 +182,11 @@ def run_candidate(
             val_dataset=val_dataset,
         )
 
-        # 5) fast dice（你 utils 的签名如果是 compute_fast_dice(out_dir, val_dataset, max_subjects) 就这样传）
+        # 5) Fast dice evaluation
         dice = compute_fast_dice(seed_out, val_dataset, max_subjects=A2_CFG["max_subjects"])
         dice_per_seed[sd] = float(dice)
 
-        # 清理 ckpt 减少空间（保持你原逻辑）
+        # Remove checkpoint to save disk space
         if ckpt_path.exists():
             ckpt_path.unlink()
 
@@ -256,7 +256,7 @@ def stageA2_cma(
     data_cfg = template_cfg["data"]
 
     # --------------------
-    # 找到 source / target
+    # Find source / target domains
     # --------------------
     source_dom = next(d for d in data_cfg["domains"] if d["name"] == "source")
     target_dom = next(d for d in data_cfg["domains"] if d["name"] == "target")
@@ -276,7 +276,7 @@ def stageA2_cma(
     )
 
     # ===============================
-    # 2️⃣ TARGET TRAIN（用 split_txt）
+    # 2️⃣ TARGET TRAIN (using split_txt)
     # ===============================
     target_dataset = BraTSSliceDataset(
         root_dir=target_dom["path"],
@@ -287,7 +287,7 @@ def stageA2_cma(
     )
 
     # ===============================
-    # 3️⃣ VAL（用 split_txt）
+    # 3️⃣ VAL (using split_txt)
     # ===============================
     val_dataset = BraTSSliceDataset(
         root_dir=val_dom["path"],

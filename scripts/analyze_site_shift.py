@@ -80,7 +80,7 @@ def main():
                         "target_val",
                         "target_test",
                         "target_all",
-                        "all_union",   # ✅ 新增：source + target(all)
+                        "all_union",   # ✅ source + target(all) union
                     ],
                     help="Which split to use (for merged npz)")
 
@@ -100,7 +100,7 @@ def main():
     # ========================================================
     if args.split is not None:
 
-        # --- 1) 旧：target_all = 用 source_train 做site列表 + target(all)做Xt（你之前那套） ---
+        # --- 1) target_all: use source_train for site list + target(all) as Xt ---
         if args.split == "target_all":
             X = pack["source_train_vecs"].astype(np.float32)
             site_names = pack["source_train_sites"]
@@ -113,7 +113,7 @@ def main():
 
             print("Loaded MERGED npz | split = target_all")
 
-        # --- 2) ✅ 新：all_union = X包含所有site（source + TCGA），用于“任选site vs 其余所有site” ---
+        # --- 2) ✅ all_union: X contains all sites (source + TCGA), for site-vs-rest analysis ---
         elif args.split == "all_union":
             X = np.vstack([
                 pack["source_train_vecs"],
@@ -131,7 +131,7 @@ def main():
 
             print("Loaded MERGED npz | split = all_union (source + target union)")
 
-        # --- 3) 其它 split：直接取对应键 ---
+        # --- 3) Other splits: load corresponding keys directly ---
         else:
             vec_key = f"{args.split}_vecs"
             site_key = f"{args.split}_sites"

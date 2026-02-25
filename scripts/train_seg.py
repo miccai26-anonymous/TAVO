@@ -227,11 +227,11 @@ def main(config_path):
             best_loss = val_loss
             save_checkpoint(checkpoint, save_dir, "best.pt")
 
-    # 保存最后一个epoch
+    # Save last epoch
     save_checkpoint(checkpoint, save_dir, "last.pt")
 
     # ===============================
-    # 创建 best_last.pt
+    # Create best_last.pt
     # ===============================
     if len(val_history) >= 5:
         last_k = 5
@@ -263,7 +263,7 @@ def main(config_path):
         output_dir=save_dir
     )
 
-    # 2️⃣ LAST（替换原 epoch20）
+    # 2️⃣ LAST (replaces epoch20)
     last_ckpt = os.path.join(save_dir, "last.pt")
     print("\n🔎 Evaluating LAST checkpoint...")
     run_evaluation_2d_to_3d(

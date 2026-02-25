@@ -70,7 +70,7 @@ def main():
     args = parser.parse_args()
 
     # --------------------------------------------------------
-    # Embedding path（用 RDS embedding）
+    # Embedding path (uses RDS embeddings)
     # --------------------------------------------------------
     embed_root = (
         "/path/to/workspace/"
@@ -130,7 +130,7 @@ def main():
 
     print("💾 Saved kmeans_score_dict.npy")
 
-    # 保存 representative 顺序
+    # Save representative ordering
     ordered_ids = [src_ids[i] for i in selected_order]
     with open(os.path.join(out_root, "kmeans_sorted_ids.txt"), "w") as f:
         f.write("\n".join(ordered_ids))

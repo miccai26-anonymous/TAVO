@@ -111,7 +111,7 @@ def evaluate_early_dice_2d_to_3d(
             img, lbl, _, _ = dataset[dataset_idx]
             img = img.unsqueeze(0).to(device)
 
-            # ⭐ 关键：显式关闭 AMP，避免显存/状态污染
+            # ⭐ Explicitly disable AMP to avoid memory/state interference
             with torch.cuda.amp.autocast(enabled=False):
                 out = model(img)
 

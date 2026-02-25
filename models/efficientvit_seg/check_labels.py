@@ -19,7 +19,7 @@ if __name__ == "__main__":
         if any(u < 0 or u > 3 for u in uniq):  # num_classes=4 → valid {0,1,2,3}
             bad_samples.append((i, uniq))
 
-        if i < 5:  # 前5个样本打印一下
+        if i < 5:  # print first 5 samples
             print(f"🧩 Sample {i}: unique labels = {uniq}")
 
     print("\n📊 Overall unique label values in dataset:", sorted(all_unique))

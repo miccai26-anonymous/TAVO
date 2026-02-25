@@ -44,7 +44,7 @@ def load_norm_scores(score_root: Path, repeat_id: int):
 
 
 # =====================================================
-# Build subset (完全和其他 target 一致)
+# Build subset (consistent with other targets)
 # =====================================================
 def build_subset(score_dicts: dict,
                  weights: dict,
@@ -125,7 +125,7 @@ def run_training(yaml_path: Path, seeds="0"):
 
 
 # =====================================================
-# Fitness Early Dice (对齐其他 target)
+# Fitness Early Dice (aligned with other targets)
 # =====================================================
 def compute_fast_dice(out_dir: Path, val_dataset, max_subjects: int):
     out_dir = Path(out_dir)

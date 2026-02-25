@@ -2,7 +2,7 @@
 import os
 from pathlib import Path
 
-# === 路径配置 ===
+# === Path config ===
 source_images = "/path/to/project/data/001_BraTS19/imagesTr"
 split_root = "/path/to/project/data/split_T30"
 
@@ -18,7 +18,7 @@ for split in ["train", "val", "test"]:
     count = 0
 
     for lbl_file in label_dir.glob("*.npy"):
-        # 🩹 去掉 label 文件名中的 "_seg"
+        # 🩹 Remove "_seg" suffix from label filename
         base_name = lbl_file.name.replace("_seg", "")
         img_src = Path(source_images) / base_name
         img_dst = target_dir / base_name

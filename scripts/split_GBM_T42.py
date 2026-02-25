@@ -19,7 +19,7 @@
 # subjects = load_list(os.path.join(COLLECTION_DIR, TARGET_FILE))
 
 # print(f"TCGA-GBM total: {len(subjects)}")
-# assert len(subjects) == 102  # 如果不是请改
+# assert len(subjects) == 102  # adjust if count differs
 
 # train_size = 27
 # val_size = 15

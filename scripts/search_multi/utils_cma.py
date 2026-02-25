@@ -69,7 +69,7 @@ def build_subset(score_dicts: dict,
     return selected
 
 # =====================================================
-# YAML / Training / Early Dice 保持不变
+# YAML / Training / Early Dice (unchanged)
 # =====================================================
 
 def set_domain_split(cfg, domain_name: str, split_txt: Path):

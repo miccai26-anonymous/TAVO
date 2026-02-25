@@ -69,7 +69,7 @@ def main():
     args = parser.parse_args()
 
     # --------------------------------------------------------
-    # Embedding path（复用 ORIENT 的 gradient embedding）
+    # Embedding path (reuses ORIENT gradient embeddings)
     # --------------------------------------------------------
     embed_root = (
         "/path/to/workspace/"
@@ -124,7 +124,7 @@ def main():
 
     print(f"💾 Saved craig_score_dict.npy → {score_path}")
 
-    # 保存 greedy 顺序（方便 debug）
+    # Save greedy order (for debugging)
     ordered_ids = [src_ids[i] for i in selected_order]
     with open(os.path.join(out_root, "craig_sorted_ids.txt"), "w") as f:
         f.write("\n".join(ordered_ids))

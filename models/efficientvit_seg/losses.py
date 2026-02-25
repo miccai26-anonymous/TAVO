@@ -7,7 +7,7 @@ class DiceCELoss(nn.Module):
         super().__init__()
         self.smooth = smooth
         self.ce = nn.CrossEntropyLoss()
-        self.weight_ce = weight_ce  # ⬅️ 新增：可调节两种loss权重
+        self.weight_ce = weight_ce  # ⬅️ configurable CE/Dice loss weight ratio
 
     def forward(self, preds, targets):
         ce_loss = self.ce(preds, targets)

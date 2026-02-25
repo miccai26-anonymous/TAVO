@@ -14,10 +14,10 @@ class FeatureExtractor(nn.Module):
 
     def forward(self, x):
         with torch.no_grad():
-            # 提取 EfficientViT 主干特征
+            # Extract EfficientViT backbone features
             feats = self.seg_model.model.backbone(x)
 
-            # 兼容返回 dict 的情况（EfficientViT 有时输出多层特征）
+            # Handle dict output (EfficientViT may return multi-level features)
             if isinstance(feats, dict):
                 feats = list(feats.values())[-1]
 

@@ -67,7 +67,7 @@ def main():
     args = parser.parse_args()
 
     # --------------------------------------------------------
-    # embedding path（使用 RDS subject embedding）
+    # Embedding path (uses RDS subject embeddings)
     # --------------------------------------------------------
     embed_root = (
         "/path/to/workspace/"
@@ -120,7 +120,7 @@ def main():
 
     print(f"💾 Saved kcenter_score_dict.npy → {score_path}")
 
-    # 保存排序
+    # Save ordering
     ordered_ids = [src_ids[i] for i in selected_order]
     with open(os.path.join(out_root, "kcenter_sorted_ids.txt"), "w") as f:
         f.write("\n".join(ordered_ids))

@@ -5,9 +5,9 @@ import torch.nn.functional as F
 
 class SimpleDecoder(nn.Module):
     """
-    通用上采样解码器：
-    接收 EfficientViT backbone 的最后一层特征（通常是 1/32 尺度）
-    自动上采样回原图大小。
+    Generic upsampling decoder:
+    Takes the last-layer features from EfficientViT backbone (typically 1/32 scale)
+    and upsamples back to the original resolution.
     """
 
     def __init__(self, in_channels, out_channels=128, upsample_scale=32):
@@ -19,12 +19,12 @@ class SimpleDecoder(nn.Module):
             nn.ReLU(inplace=True)
         )
 
-        # 最后上采样到原图分辨率
+        # Upsample to original resolution
         self.upsample_scale = upsample_scale
 
     def forward(self, x):
         # x: (B, in_channels, H/32, W/32)
-        if isinstance(x, dict):  # 万一输入是 dict
+        if isinstance(x, dict):  # handle dict input
             x = list(x.values())[-1]
 
         x = self.conv_block(x)

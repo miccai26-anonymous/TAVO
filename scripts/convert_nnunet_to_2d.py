@@ -18,8 +18,8 @@
 # root_in = "/path/to/workspace/ANON_USER/BrainTumorSeg/nnunet_data/nnUNet_preprocessed"
 # root_out = "/path/to/project/data"
 
-# # 可选参数
-# SAVE_PREVIEW = True      # 是否保存每个subject的第一层预览图
+# # Optional settings
+# SAVE_PREVIEW = True      # Save per-subject preview image
 # CSV_FILENAME = "slice_index.csv"
 
 # # ==============================================================
@@ -33,7 +33,7 @@
 #     return (img - np.min(img)) / (np.max(img) - np.min(img) + 1e-8)
 
 # def visualize_modalities(img, seg, out_path, z):
-#     """保存第一层可视化(4模态+seg)"""
+#     """Save first-slice visualization (4 modalities + seg)"""
 #     fig, axs = plt.subplots(1, 5, figsize=(18, 4))
 #     titles = ["FLAIR", "T1", "T1CE", "T2", "Seg"]
 #     for i in range(4):
@@ -59,7 +59,7 @@
 #     maybe_mkdir_p(images_out)
 #     maybe_mkdir_p(labels_out)
 
-#     # 准备 CSV 索引
+#     # Prepare CSV index
 #     csv_path = join(out_dir, CSV_FILENAME)
 #     csv_file = open(csv_path, "w", newline="")
 #     writer = csv.writer(csv_file)
@@ -78,24 +78,24 @@
 #             print(f"⚠️ Missing seg for {subject_id}, skipped.")
 #             continue
 
-#         # 读取
+#         # Load data
 #         img = load_b2nd(img_path)     # (4, D, H, W)
 #         seg = load_b2nd(seg_path)     # (1, D, H, W)
 #         D = img.shape[1]
 
-#         # 归一化
+#         # Normalize
 #         img = normalize(img)
 
-#         # 生成每个 slice 的 (H, W, 4)
+#         # Generate per-slice arrays (H, W, 4)
 #         for z in range(D):
 #             img_slice = np.transpose(img[:, z, :, :], (1, 2, 0)).astype(np.float32)
 #             seg_slice = seg[0, z, :, :].astype(np.int16)
 
-#             # ✅ 修正标签范围
+#             # ✅ Fix label range
 #             seg_slice[seg_slice < 0] = 0
 #             seg_slice[seg_slice == 4] = 3
 
-#             # 判断该 slice 是否含病灶
+#             # Check if this slice contains lesion
 #             has_lesion = int((seg_slice > 0).any())
 
 #             out_img_path = join(images_out, f"{subject_id}_slice{z:03d}.npy")
@@ -104,10 +104,10 @@
 #             np.save(out_img_path, img_slice)
 #             np.save(out_seg_path, seg_slice)
 
-#             # 写入索引
+#             # Write index
 #             writer.writerow([subject_id, z, out_img_path, out_seg_path, has_lesion])
 
-#         # 保存预览（可选）
+#         # Save preview (optional)
 #         if SAVE_PREVIEW:
 #             mid = D // 2
 #             out_png = join(out_dir, f"{subject_id}_preview.png")
@@ -161,7 +161,7 @@ def visualize(img, seg, out_path, z):
     seg: (D, H, W) int segmentation
     """
 
-    # ========= 固定语义 colormap =========
+    # ========= Fixed semantic colormap =========
     # 0 background -> black
     # 1 liver      -> light gray
     # 2 tumor      -> red

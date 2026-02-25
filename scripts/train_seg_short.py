@@ -137,10 +137,10 @@ def run_short_training_with_dataset(
     val_dataset,
 ) -> Dict[str, Any]:
     """
-    供 StageA2 直接 import 调用的入口：
-    - 不会构建/扫描数据集（train_dataset, val_dataset 由外部传入）
-    - 仍然按你现有的逻辑：warmup ckpt -> train_short -> eval_short -> 保存 latest.pt
-    - 返回 loss 数组，方便你之后做 fitness proxy（如果需要）
+    Entry point for StageA2 direct import:
+    - Does not build/scan datasets (train_dataset, val_dataset provided externally)
+    - Follows existing logic: warmup ckpt -> train_short -> eval_short -> save latest.pt
+    - Returns loss arrays for optional fitness proxy use
     """
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
