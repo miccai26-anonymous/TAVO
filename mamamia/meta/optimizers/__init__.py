@@ -1,3 +1,0 @@
-"""
-Meta-optimization algorithms.
-"""
