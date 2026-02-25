@@ -1,1 +1,1 @@
-"""MAMA-MIA breast DCE-MRI data selection and meta-optimization."""
+"""MAMA-MIA breast DCE-MRI segmentation training and evaluation."""
