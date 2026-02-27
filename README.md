@@ -1,4 +1,4 @@
-# Target-Aware Adaptive Multi-Criterion Data Valuation
+# TAVO: Target-Aware Adaptive Multi-Criterion Data Valuation
 
 Code for "Target-Aware Adaptive Multi-Criterion Data Valuation for Medical Image Segmentation" (anonymous MICCAI 2026 submission).
 
@@ -8,7 +8,8 @@ Code for "Target-Aware Adaptive Multi-Criterion Data Valuation for Medical Image
   - `models/` — Model definitions (EfficientViT segmentation)
   - `eval/` — 2D-to-3D evaluation
   - `configs/` — Training configuration templates
-  - `scripts/` — Selection methods, CMA-ES search, training, utilities
+  - `scripts/` — Data valuation, CMA-ES search, training, utilities
+  - `requirements.txt` — BraTS-specific dependencies
 - `mamamia/` — MAMA-MIA breast DCE-MRI experiments
   - `selection/` — Data valuation methods
   - `scripts/` — Embedding extraction, preprocessing, selection, meta-optimization
@@ -24,18 +25,20 @@ Code for "Target-Aware Adaptive Multi-Criterion Data Valuation for Medical Image
 - PyTorch 2.0+ with CUDA
 
 ```bash
-conda create -n data_selection python=3.10 -y
-conda activate data_selection
+conda create -n tavo python=3.10 -y
+conda activate tavo
 
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
 pip install numpy scipy scikit-learn scikit-image tqdm matplotlib
-pip install cma botorch gpytorch
-pip install SimpleITK synapseclient
+pip install cma submodlib_py
+pip install SimpleITK
 ```
 
-### nnUNet (MAMA-MIA fork)
+For BraTS experiments, see `Brats2021/requirements.txt` for the full dependency list.
 
-We use the nnUNet fork from [MAMA-MIA](https://github.com/LidiaGarrucho/MAMA-MIA), which includes a 2D PlainConvUNet for breast tumor segmentation.
+### nnUNet (MAMA-MIA)
+
+For the MAMA-MIA experiments, we use the nnUNet fork from [MAMA-MIA](https://github.com/LidiaGarrucho/MAMA-MIA) which provides a 2D PlainConvUNet for breast tumor segmentation.
 
 ```bash
 git clone https://github.com/LidiaGarrucho/MAMA-MIA externals/MAMA-MIA
@@ -48,26 +51,21 @@ export nnUNet_results="$PWD/externals/MAMA-MIA/nnUNet/nnunetv2/nnUNet_results"
 
 ### EfficientViT
 
-We use [EfficientViT-L1](https://github.com/mit-han-lab/efficientvit) pretrained on ADE20K (150-class semantic segmentation). The 150-class head is kept during fine-tuning — label 0 is background, label >0 is tumor.
+We use [EfficientViT-L1](https://github.com/mit-han-lab/efficientvit) pretrained on ADE20K for semantic segmentation.
 
 ```bash
-git clone https://github.com/mit-han-lab/efficientvit models/efficientvit
-pip install -e models/efficientvit
-
-mkdir -p models/efficientvit/assets/checkpoints/efficientvit_seg
-wget -O models/efficientvit/assets/checkpoints/efficientvit_seg/efficientvit_seg_l1_ade20k.pt \
-    https://huggingface.co/han-cai/efficientvit-seg/resolve/main/efficientvit_seg_l1_ade20k.pt
+pip install efficientvit
 ```
 
 ## Datasets
 
-### BraTS (Brain Tumor Segmentation)
+### BraTS 2021
 
 The BraTS dataset is available from the [BraTS Challenge](https://www.synapse.org/brats).
 
-### MAMA-MIA (Breast DCE-MRI)
+### MAMA-MIA
 
-The MAMA-MIA dataset is hosted on [Synapse](https://www.synapse.org/Synapse:syn60868042). You need a Synapse account.
+The MAMA-MIA dataset is hosted on [Synapse](https://www.synapse.org/Synapse:syn60868042).
 
 ```bash
 pip install synapseclient
@@ -75,16 +73,44 @@ synapse login --authToken YOUR_TOKEN
 synapse get -r syn60868042 --downloadLocation ./data/dataset_mamamia
 ```
 
-After downloading, the data should be at `data/dataset_mamamia/` with:
-- `images/` — per-case folders with multi-phase NIfTI files
-- `segmentations/expert/` — ground truth labels
+## Usage
 
-## Quick Start
+### Data Valuation
 
-1. Install dependencies and download models (see Setup above)
-2. Download dataset(s)
-3. Update dataset paths in scripts
-4. Run training/evaluation scripts
+Compute valuation scores for each selection method:
+
+```bash
+# MAMA-MIA
+python mamamia/scripts/run_selection.py \
+    --method rds \
+    --pool-embeddings data/embeddings/pool_embeddings.jsonl \
+    --query-embeddings data/embeddings/query_embeddings.jsonl \
+    --budget 250 --output outputs/selections/rds_250.json
+```
+
+### Meta-Optimization (CMA-ES)
+
+Run CMA-ES to learn optimal combination weights over valuation methods:
+
+```bash
+# MAMA-MIA
+python mamamia/scripts/run_meta_cmaes.py \
+    --pool-embeddings data/embeddings/pool_embeddings.jsonl \
+    --query-embeddings data/embeddings/query_embeddings.jsonl \
+    --data-dirs /path/to/nnUNet_preprocessed/DatasetXXX/nnUNetPlans_2d \
+    --val-cases CASE_A CASE_B \
+    --budget 250 --generations 20 --popsize 8
+```
+
+### Training and Evaluation
+
+```bash
+# MAMA-MIA — EfficientViT training
+python mamamia/train_seg.py --help
+
+# MAMA-MIA — 3D Dice evaluation
+python mamamia/evaluate_3d_dice_nnunet_preproc.py --help
+```
 
 All scripts support `--help` for full usage information.
 
