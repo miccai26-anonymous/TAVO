@@ -26,6 +26,7 @@ from .less import LESSSelection
 from .gradmatch import GradMatchSelection
 from .craig_proxy import CRAIGProxySelection
 from .craig import CRAIGSelection
+from .orient import OrientSelection
 
 __all__ = [
     "SelectionMethod", "SelectionResult", "SELECTION_METHODS",
@@ -33,5 +34,5 @@ __all__ = [
     "RandomSelection", "KCenterSelection", "HerdingSelection",
     "KMeansSelection", "DiversitySelection", "RDSSelection",
     "LESSSelection", "GradMatchSelection", "CRAIGProxySelection",
-    "CRAIGSelection",
+    "CRAIGSelection", "OrientSelection",
 ]

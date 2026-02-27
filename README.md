@@ -4,10 +4,17 @@ Code for "Target-Aware Adaptive Multi-Criterion Data Valuation for Medical Image
 
 ## Structure
 
-- `eval/` — Evaluation scripts
-- `models/` — Model definitions (EfficientViT segmentation)
-- `scripts/` — BraTS experiments (selection, CMA-ES search, training)
-- `mamamia/` — MAMA-MIA breast DCE-MRI experiments (selection, meta-optimization, training, evaluation)
+- `Brats2021/` — BraTS brain tumor segmentation experiments
+  - `models/` — Model definitions (EfficientViT segmentation)
+  - `eval/` — 2D-to-3D evaluation
+  - `configs/` — Training configuration templates
+  - `scripts/` — Selection methods, CMA-ES search, training, utilities
+- `mamamia/` — MAMA-MIA breast DCE-MRI experiments
+  - `selection/` — Data valuation methods
+  - `scripts/` — Embedding extraction, preprocessing, selection, meta-optimization
+  - `utils/` — Data loading and metrics
+  - `train_seg.py` — EfficientViT training
+  - `evaluate_3d_dice.py`, `evaluate_3d_dice_nnunet_preproc.py` — 3D Dice evaluation
 
 ## Setup
 
