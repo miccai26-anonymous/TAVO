@@ -75,43 +75,6 @@ synapse get -r syn60868042 --downloadLocation ./data/dataset_mamamia
 
 ## Usage
 
-### Data Valuation
-
-Compute valuation scores for each selection method:
-
-```bash
-# MAMA-MIA
-python mamamia/scripts/run_selection.py \
-    --method rds \
-    --pool-embeddings data/embeddings/pool_embeddings.jsonl \
-    --query-embeddings data/embeddings/query_embeddings.jsonl \
-    --budget 250 --output outputs/selections/rds_250.json
-```
-
-### Meta-Optimization (CMA-ES)
-
-Run CMA-ES to learn optimal combination weights over valuation methods:
-
-```bash
-# MAMA-MIA
-python mamamia/scripts/run_meta_cmaes.py \
-    --pool-embeddings data/embeddings/pool_embeddings.jsonl \
-    --query-embeddings data/embeddings/query_embeddings.jsonl \
-    --data-dirs /path/to/nnUNet_preprocessed/DatasetXXX/nnUNetPlans_2d \
-    --val-cases CASE_A CASE_B \
-    --budget 250 --generations 20 --popsize 8
-```
-
-### Training and Evaluation
-
-```bash
-# MAMA-MIA — EfficientViT training
-python mamamia/train_seg.py --help
-
-# MAMA-MIA — 3D Dice evaluation
-python mamamia/evaluate_3d_dice_nnunet_preproc.py --help
-```
-
 All scripts support `--help` for full usage information.
 
 ## Notes
