@@ -1,0 +1,53 @@
+model:
+  name: efficientvit_l1
+  in_channels: 4
+  num_classes: 4
+  pretrained: true
+
+data:
+  skip_empty_train: true
+  skip_empty_val: false
+  domains:
+    - name: source
+      path: Placeholder/EfficientVit/data/002_BraTS21
+      split: train
+      split_txt: Placeholder/EfficientVit/data/splits_C5_source
+
+    - name: target
+      path: Placeholder/EfficientVit/data/002_BraTS21
+      split: train
+      split_txt: Placeholder/EfficientVit/data/split_C5_T22
+
+  val:
+    path: Placeholder/EfficientVit/data/002_BraTS21
+    split: val
+    split_txt: Placeholder/EfficientVit/data/split_C5_T22
+
+  test:
+    path: Placeholder/EfficientVit/data/002_BraTS21
+    split: test
+    split_txt: Placeholder/EfficientVit/data/split_C5_T22
+  
+  img_size: 512
+  batch_size: 4
+  num_workers: 4
+
+optimizer:
+  lr: 0.0001
+  weight_decay: 0.00001
+
+scheduler:
+  T_max: 20
+  eta_min: 0.000001
+
+trainer:
+  max_iters: PLACEHOLDER_ITERS
+
+training:
+  epochs: 9999
+  save_dir: PLACEHOLDER_OUTDIR
+  feature_mode: false
+
+
+logging:
+  save_loss_curve: true
